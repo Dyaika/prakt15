@@ -10,15 +10,14 @@ import java.util.Scanner;
 public class TextDocument implements IDocument{
     private StringBuilder content;
     private final String fileName;
-    private FileReader fr;
-    private FileWriter fw;
+
     public TextDocument(String fileName) throws IOException {
         this.fileName = fileName;
         this.content = new StringBuilder();
-        fr = new FileReader(fileName);
+        FileReader fr = new FileReader(fileName);
         Scanner sc = new Scanner(fr);
         while(sc.hasNext()){
-            content.append(sc.nextLine() + "\n");
+            content.append(sc.nextLine()).append("\n");
         }
 
         fr.close();
@@ -38,7 +37,7 @@ public class TextDocument implements IDocument{
     @Override
     public void save(Component component) throws IOException {
         setContent(((JTextArea)component).getText());
-        fw = new FileWriter(fileName);
+        FileWriter fw = new FileWriter(fileName);
         fw.write(content.toString());
         fw.close();
     }

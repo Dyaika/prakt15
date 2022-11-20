@@ -1,16 +1,13 @@
 package com.company;
 
 import javax.swing.*;
-import javax.swing.event.MenuKeyEvent;
-import javax.swing.event.MenuKeyListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class TextEditor extends JFrame {
     private Component mainContent;
-    private JMenu jMenu;
+    private final JMenu jMenu;
     private final JMenuItem[] jMenuItems;
     private final JScrollPane jScrollPane;
     private ICreateDocument createDocument;
