@@ -1,5 +1,7 @@
 package com.company;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,8 +25,8 @@ public class TextDocument implements IDocument{
     }
 
     @Override
-    public String getContent() {
-        return content.toString();
+    public Component getContent() {
+        return new JTextArea(content.toString());
     }
 
     @Override
@@ -34,8 +36,8 @@ public class TextDocument implements IDocument{
     }
 
     @Override
-    public void save() throws IOException {
-
+    public void save(Component component) throws IOException {
+        setContent(((JTextArea)component).getText());
         fw = new FileWriter(fileName);
         fw.write(content.toString());
         fw.close();

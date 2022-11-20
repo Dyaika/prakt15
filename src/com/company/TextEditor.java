@@ -4,20 +4,18 @@ import javax.swing.*;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class TextEditor extends JFrame {
     private Component mainContent;
-    private JMenuBar jMenuBar;
     private JMenu jMenu;
-    private JMenuItem[] jMenuItems;
-    private JScrollPane jScrollPane;
+    private final JMenuItem[] jMenuItems;
+    private final JScrollPane jScrollPane;
     private ICreateDocument createDocument;
     private IDocument document;
-    public TextEditor() throws HeadlessException {
+    public TextEditor() {
         super("Text Editor");
         setLayout(new BorderLayout());
 
@@ -36,13 +34,13 @@ public class TextEditor extends JFrame {
         }
 
         //само меню
-        jMenuBar = new JMenuBar();
+        JMenuBar jMenuBar = new JMenuBar();
         jMenuBar.add(jMenu);
         add(jMenuBar, BorderLayout.NORTH);
 
         //контент
-        mainContent = new JTextArea();
-        jScrollPane = new JScrollPane(mainContent);
+        mainContent = null;
+        jScrollPane = new JScrollPane();
         add(jScrollPane, BorderLayout.CENTER);
 
         addActions();
@@ -62,13 +60,13 @@ public class TextEditor extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    document = (TextDocument)createDocument.createNew();
+                    document = createDocument.createNew();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
+                mainContent = document.getContent();
+                jScrollPane.setColumnHeaderView(mainContent);
                 System.out.println("HELLO FROM NEW");
-                ((JTextArea)mainContent).setText("");
-                repaint();
             }
         });
 
@@ -77,12 +75,12 @@ public class TextEditor extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    document = (TextDocument)createDocument.createOpen();
+                    document = createDocument.createOpen();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                ((JTextArea)mainContent).setText((String) document.getContent());
-                repaint();
+                mainContent = document.getContent();
+                jScrollPane.setColumnHeaderView(mainContent);
                 System.out.println("HELLO FROM OPEN");
             }
         });
@@ -91,17 +89,13 @@ public class TextEditor extends JFrame {
         jMenuItems[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                if (document != null){
-                    document.setContent(((JTextArea)mainContent).getText());
+                if (document != null && mainContent != null){
                     try {
-                        document.save();
+                        document.save(mainContent);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
                 }
-
-
                 System.out.println("HELLO FROM SAVE");
             }
         });
@@ -110,8 +104,10 @@ public class TextEditor extends JFrame {
         jMenuItems[3].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                document.exit();
-                ((JTextArea)mainContent).setText("");
+                if (document != null){
+                    document.exit();
+                }
+                jScrollPane.setColumnHeaderView(null);
                 System.out.println("HELLO FROM EXIT");
             }
         });
